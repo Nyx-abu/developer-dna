@@ -145,6 +145,16 @@ graph TD;
 
 ---
 
+## Roadmap
+
+- [x] Initial VS Code Extension Release
+- [x] Django Backend and Kafka Integration
+- [ ] Support for IntelliJ IDEA / WebStorm
+- [ ] Advanced AI Career Path Recommendations
+- [ ] Team-level Analytics Dashboard
+
+---
+
 ## Project Structure
 
 ```text

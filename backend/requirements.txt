@@ -37,3 +37,7 @@ pytest-cov>=4.1,<6.0
 
 # ─── Linting ───
 ruff>=0.3,<1.0
+
+# ─── MCP & Badges ───
+mcp>=1.2.1
+pygal>=3.0.0

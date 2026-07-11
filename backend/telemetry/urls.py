@@ -31,10 +31,13 @@ router.register(r"skills", SkillSnapshotViewSet, basename="skill")
 router.register(r"insights", AIInsightViewSet, basename="insight")
 router.register(r"reports", WeeklyReportViewSet, basename="report")
 
+from telemetry.badges import activity_badge
+
 urlpatterns = [
     # Action endpoints
     path("events/ingest/", EventIngestView.as_view(), name="event-ingest"),
     path("analysis/trigger/", AnalysisTriggerView.as_view(), name="analysis-trigger"),
+    path("badges/activity/<str:username>/", activity_badge, name="activity-badge"),
     # Router-generated CRUD routes
     path("", include(router.urls)),
 ]

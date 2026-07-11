@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { randomUUID } from 'crypto';
-import * as WebSocket from 'ws';
+import WebSocket from 'ws';
 
 let outputChannel: vscode.OutputChannel;
 let currentSessionId: string | undefined;

@@ -45,6 +45,11 @@
           "default": "http://localhost:8000/api/v1/events/ingest/",
           "description": "API endpoint for event ingestion"
         },
+        "developerDna.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API Key or Bearer Token for secure backend access"
+        },
         "developerDna.bufferSize": {
           "type": "number",
           "default": 50,
@@ -66,11 +71,13 @@
     "compile": "node esbuild.js",
     "watch": "node esbuild.js --watch",
     "package": "vsce package --no-dependencies",
+    "publish-ext": "vsce publish",
     "lint": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.24.0",
     "esbuild": "^0.20.0",
     "typescript": "^5.3.0"
   }

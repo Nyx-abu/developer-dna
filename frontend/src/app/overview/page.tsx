@@ -5,13 +5,23 @@ import { MetricCard } from "@/components/cards/MetricCard";
 import { InsightCard } from "@/components/cards/InsightCard";
 import { ProductivityChart } from "@/components/charts/ProductivityChart";
 import { ActivityHeatmap } from "@/components/charts/ActivityHeatmap";
-import { Clock, Code, GitCommit, Flame } from "lucide-react";
+import { Clock, Code, GitCommit, Flame, Copy, Check } from "lucide-react";
 import { apiClient } from "@/lib/api";
 import type { AIInsight } from "@/lib/types";
 
 export default function OverviewPage() {
   const [insights, setInsights] = useState<AIInsight[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const mcpUrl = typeof window !== "undefined" ? window.location.origin : "https://your-server.com";
+  const markdownSnippet = `[![Developer DNA Stats](${mcpUrl}/api/v1/badges/skills.svg)](https://github.com/Nyx-abu/developer-dna)`;
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(markdownSnippet);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // We can derive metric values from real data in the future, for now, we'll fetch insights
   // to replace the most prominent mock on this page.
@@ -31,9 +41,29 @@ export default function OverviewPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500 pb-12">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome back, shoto</h1>
-        <p className="text-slate-400">Here&apos;s your coding DNA for this week.</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome back, shoto</h1>
+          <p className="text-slate-400">Here&apos;s your coding DNA for this week.</p>
+        </div>
+        <div className="flex flex-col gap-2 p-4 bg-slate-900/60 border border-slate-700/50 rounded-xl shadow-lg backdrop-blur-sm max-w-sm w-full">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-semibold text-slate-200">Share your DNA</span>
+            <span className="text-xs text-slate-400">GitHub README</span>
+          </div>
+          <div className="flex gap-2">
+            <code className="flex-1 bg-black/40 px-3 py-2 rounded text-xs text-slate-300 truncate font-mono border border-white/5">
+              {markdownSnippet}
+            </code>
+            <button 
+              onClick={copyToClipboard}
+              className="p-2 bg-blue-600 hover:bg-blue-500 rounded text-white transition-colors flex-shrink-0"
+              title="Copy to clipboard"
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

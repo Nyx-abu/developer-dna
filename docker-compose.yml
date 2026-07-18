@@ -71,6 +71,7 @@ services:
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
     ports:
       - "8000:8000"
     volumes:
@@ -123,6 +124,7 @@ services:
     command: npm run dev
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
     ports:
       - "3000:3000"
     volumes:
@@ -148,3 +150,48 @@ volumes:
 networks:
   devdna-net:
     driver: bridge
+
+  # ─── OpenTelemetry Collector ───
+  otel-collector:
+    image: otel/opentelemetry-collector:0.100.0
+    container_name: devdna-otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./observability/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    depends_on:
+      - jaeger
+    networks:
+      - devdna-net
+
+  # ─── Jaeger ───
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: devdna-jaeger
+    ports:
+      - "16686:16686"
+      - "14250:14250"
+    networks:
+      - devdna-net
+
+  # ─── Debezium (CDC) ───
+  debezium:
+    image: quay.io/debezium/connect:2.4
+    container_name: devdna-debezium
+    environment:
+      BOOTSTRAP_SERVERS: kafka:29092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      STATUS_STORAGE_TOPIC: connect_statuses
+    ports:
+      - "8083:8083"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - devdna-net

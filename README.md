@@ -29,7 +29,7 @@
 
 Developers write thousands of lines of code, debug countless complex errors, and adopt new frameworks daily. Yet, there is no definitive way to reflect on these achievements, visualize skill growth, or identify workflow bottlenecks.
 
-**Developer DNA** solves this by acting as your personal engineering analyst. It is an open-source initiative designed to help you quantify your coding journey. By capturing granular IDE events in the background, Developer DNA builds a comprehensive profile of your engineering habits and leverages advanced AI to provide actionable insights.
+**Developer DNA** solves this by acting as your personal engineering analyst. It is an open-source initiative designed to help you quantify your coding journey. By capturing granular IDE events in the background, Developer DNA builds a comprehensive profile of your engineering habits and uses AI to provide actionable insights.
 
 ---
 
@@ -55,13 +55,14 @@ Developer DNA transforms raw telemetry into a meaningful narrative of your caree
 
 ## How It Does It
 
-The platform operates on a robust, scalable architecture designed for privacy and performance.
+The platform operates on a scalable architecture designed for privacy and performance.
 
-1. **Seamless IDE Integration:** A VS Code extension silently watches your typing, git operations, and terminal errors. It runs with zero impact on your local machine's performance.
-2. **Asynchronous Processing Pipeline:** Telemetry data is streamed via Apache Kafka, ensuring high throughput and decoupled processing. Background workers handle data ingestion safely into PostgreSQL.
+1. **IDE Integration:** A VS Code extension silently watches your typing, git operations, and terminal errors. It runs with zero impact on your local machine's performance.
+2. **Reliable Asynchronous Pipeline:** Telemetry data is saved to a local PostgreSQL outbox table using the **Outbox Pattern**, ensuring no data loss. **Debezium** captures these changes (CDC) and streams them via **Apache Kafka** to background workers.
 3. **Advanced AI Analysis:** A 5-agent LangGraph pipeline, powered by LLMs like Gemini and Qwen, analyzes the raw data. It categorizes events into distinct dimensions: Skill, Productivity, Debug, Career, and Report generation.
 4. **Rich Data Visualization:** A sleek Next.js interface presents the insights, pulling processed analytics securely from a Django REST framework API.
-5. **Privacy First Design:** Your code telemetry remains under your control. Secrets are never exposed, and the system can be run entirely on your local infrastructure.
+5. **Full-Stack Observability:** Instrumented completely with **OpenTelemetry**, providing distributed tracing and metrics visualization across the entire stack via **Jaeger**.
+6. **Privacy First Design:** Your code telemetry remains under your control. Secrets are never exposed, and the system can be run entirely on your local infrastructure.
 
 ---
 
@@ -121,9 +122,10 @@ graph TD;
     end
     subgraph Backend Core
         API[Django DRF API]
+        DB[(PostgreSQL & Outbox)]
+        Debezium[Debezium CDC]
         Kafka[Apache Kafka]
         Worker[Kafka Consumer Worker]
-        DB[(PostgreSQL)]
     end
     subgraph AI Pipeline
         LangGraph[LangGraph Agents]
@@ -134,9 +136,10 @@ graph TD;
     end
 
     VSC -- Batch POST Events --> API
-    API -- Publish --> Kafka
+    API -- Write to Outbox --> DB
+    DB -- CDC Stream --> Debezium
+    Debezium -- Publish --> Kafka
     Kafka -- Consume --> Worker
-    Worker -- Store Raw Data --> DB
     Worker -- Trigger Analysis --> LangGraph
     LangGraph -- RAG Context --> FAISS
     LangGraph -- Store Insights --> DB

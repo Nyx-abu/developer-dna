@@ -6,6 +6,15 @@ import sys
 
 def main() -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+    
+    # Initialize OpenTelemetry if not in test/migration mode
+    if "runserver" in sys.argv or "gunicorn" in sys.argv:
+        try:
+            from config.telemetry import setup_telemetry
+            setup_telemetry()
+        except ImportError:
+            pass
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

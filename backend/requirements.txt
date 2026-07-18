@@ -41,3 +41,11 @@ ruff>=0.3,<1.0
 # ─── MCP & Badges ───
 mcp>=1.2.1
 pygal>=3.0.0
+
+# ─── OpenTelemetry ───
+opentelemetry-api>=1.20.0
+opentelemetry-sdk>=1.20.0
+opentelemetry-exporter-otlp>=1.20.0
+opentelemetry-instrumentation-django>=0.41b0
+opentelemetry-instrumentation-psycopg2>=0.41b0
+

@@ -81,23 +81,20 @@ def publish_event(
     event_schema: BaseModel,
 ) -> None:
     """
-    Serialise a Pydantic model to JSON and publish to the given Kafka
-    topic.  Uses the key for partitioning (usually user_id).
+    Serialise a Pydantic model to JSON and write it to the OutboxEvent table
+    in the database. Debezium will tail this table and publish to Kafka.
     """
-    producer = get_producer()
-    payload = json.dumps(
-        event_schema.model_dump(mode="json"),
-        default=str,
-    ).encode("utf-8")
+    from events.models import OutboxEvent
 
-    producer.produce(
-        topic=topic,
-        key=key.encode("utf-8"),
-        value=payload,
-        callback=_delivery_callback,
+    payload = event_schema.model_dump(mode="json")
+    
+    OutboxEvent.objects.create(
+        aggregate_type=topic,
+        aggregate_id=key,
+        event_type=event_schema.__class__.__name__,
+        payload=payload
     )
-    # Trigger any queued delivery callbacks without blocking.
-    producer.poll(0)
+    logger.debug(f"Saved {topic} event for {key} to outbox")
 
 
 # ──────────────────────────────────────────────────────────────────────────────

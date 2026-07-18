@@ -14,7 +14,13 @@
     "next": "14.2.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.15.0"
+    "recharts": "^2.15.0",
+    "@opentelemetry/api": "^1.8.0",
+    "@opentelemetry/sdk-node": "^0.51.1",
+    "@opentelemetry/sdk-metrics": "^1.24.1",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.51.1",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.51.1",
+    "@opentelemetry/instrumentation-http": "^0.51.1"
   },
   "devDependencies": {
     "@types/node": "^20.17.0",

@@ -66,6 +66,18 @@ The platform operates on a scalable architecture designed for privacy and perfor
 
 ---
 
+## Enterprise Deployment & Usage
+
+Developer DNA is designed for robust enterprise deployments. It seamlessly integrates into corporate networks and adheres to strict security standards.
+
+### Enterprise Considerations
+- **Data Residency & Privacy:** All IDE telemetry and analytics are stored on your self-hosted infrastructure. No proprietary code is sent to external APIs (unless opting for cloud LLMs).
+- **Identity & Access Management (IAM):** Integrates out-of-the-box with Okta, Azure AD, and Keycloak via OIDC for secure Single Sign-On (SSO).
+- **Scalability:** The architecture (Kafka + Debezium) is built for horizontal scaling to support thousands of developers concurrently.
+- **Role-Based Access Control (RBAC):** Define custom roles to manage who can view team analytics versus personal insights.
+
+---
+
 ## Installation & Setup
 
 ### Prerequisites
